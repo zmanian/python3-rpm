@@ -14,7 +14,7 @@ URL: https://www.python.org/
 #  WARNING  When rebasing to a new Python version,
 #           remember to update the python3-docs package as well
 Version: %{pybasever}.2
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: Python
 
 
@@ -167,6 +167,7 @@ BuildRequires: ncurses-devel
 BuildRequires: openssl-devel
 BuildRequires: pkgconfig
 BuildRequires: readline-devel
+BuildRequires: redhat-rpm-config >= 127
 BuildRequires: sqlite-devel
 BuildRequires: gdb
 
@@ -436,12 +437,6 @@ Requires: python3-rpm-generators
 # See https://fedoraproject.org/wiki/Packaging:Directory_Replacement
 Requires: python3-setuptools
 
-# https://bugzilla.redhat.com/show_bug.cgi?id=1217376
-# https://bugzilla.redhat.com/show_bug.cgi?id=1496757
-# https://bugzilla.redhat.com/show_bug.cgi?id=1218294
-# TODO change to a specific subpackage once available (#1218294)
-Requires: redhat-rpm-config
-
 Provides: %{name}-2to3 = %{version}-%{release}
 Provides: 2to3 = %{version}-%{release}
 
@@ -549,8 +544,6 @@ so extensions for both versions can co-exist in the same directory.
 
 %else  # with flatpackage
 
-Requires: redhat-rpm-config
-
 # We'll not provide this, on purpose
 # No package in Fedora shall ever depend on flatpackage via this
 %global __requires_exclude ^python\\(abi\\) = 3\\..$
@@ -650,13 +643,21 @@ topdir=$(pwd)
 %endif
 
 # Set common compiler/linker flags
-export CFLAGS="$RPM_OPT_FLAGS -D_GNU_SOURCE -fPIC -fwrapv"
-export CXXFLAGS="$RPM_OPT_FLAGS -D_GNU_SOURCE -fPIC -fwrapv"
+# We utilize the %%extension_...flags macros here so users building C/C++
+# extensions with our python won't get all the compiler/linker flags used
+# in Fedora RPMs.
+# Standard library built here will still use the %%build_...flags,
+# Fedora packages utilizing %%py3_build will use them as well
+# https://fedoraproject.org/wiki/Changes/Python_Extension_Flags
+export CFLAGS="%{extension_cflags} -D_GNU_SOURCE -fPIC -fwrapv"
+export CFLAGS_NODIST="%{build_cflags} -D_GNU_SOURCE -fPIC -fwrapv"
+export CXXFLAGS="%{extension_cxxflags} -D_GNU_SOURCE -fPIC -fwrapv"
 export CPPFLAGS="$(pkg-config --cflags-only-I libffi)"
-export OPT="$RPM_OPT_FLAGS -D_GNU_SOURCE -fPIC -fwrapv"
+export OPT="%{extension_cflags} -D_GNU_SOURCE -fPIC -fwrapv"
 export LINKCC="gcc"
 export CFLAGS="$CFLAGS $(pkg-config --cflags openssl)"
-export LDFLAGS="$RPM_LD_FLAGS -g $(pkg-config --libs-only-L openssl)"
+export LDFLAGS="%{extension_ldflags} -g $(pkg-config --libs-only-L openssl)"
+export LDFLAGS_NODIST="%{build_ldflags} -g $(pkg-config --libs-only-L openssl)"
 
 # We can build several different configurations of Python: regular and debug.
 # Define a common function that does one build:
@@ -1521,6 +1522,10 @@ CheckPython optimized
 # ======================================================
 
 %changelog
+* Tue Feb 12 2019 Miro Hrončok <mhroncok@redhat.com> - 3.7.2-6
+- Reduced default build flags used to build extension modules
+  https://fedoraproject.org/wiki/Changes/Python_Extension_Flags
+
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 3.7.2-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
