@@ -1014,12 +1014,18 @@ CheckPython() {
   # our non-standard decorators take effect on the relevant tests:
   #   @unittest._skipInRpmBuild(reason)
   #   @unittest._expectedFailureInRpmBuild
+  # test_gdb skipped on armv7hl:
+  #   https://bugzilla.redhat.com/show_bug.cgi?id=1196181
+  # test_gdb skipped on s390x:
+  #   https://bugzilla.redhat.com/show_bug.cgi?id=1678277
   WITHIN_PYTHON_RPM_BUILD= \
   LD_LIBRARY_PATH=$ConfDir $ConfDir/python -m test.regrtest \
     -wW --slowest -j0 \
     -x test_distutils \
     -x test_bdist_rpm \
+    %ifarch %{arm} s390x
     -x test_gdb \
+    %endif
     %ifarch %{mips64}
     -x test_ctypes \
     %endif
