@@ -1023,9 +1023,6 @@ CheckPython() {
     %ifarch %{mips64}
     -x test_ctypes \
     %endif
-    %ifarch ppc64le
-    -x test_buffer \
-    %endif
 
   echo FINISHED: CHECKING OF PYTHON FOR CONFIGURATION: $ConfName
 
