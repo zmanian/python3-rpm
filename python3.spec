@@ -14,7 +14,7 @@ URL: https://www.python.org/
 #  WARNING  When rebasing to a new Python version,
 #           remember to update the python3-docs package as well
 Version: %{pybasever}.2
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: Python
 
 
@@ -1522,6 +1522,9 @@ CheckPython optimized
 # ======================================================
 
 %changelog
+* Sun Feb 17 2019 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 3.7.2-7
+- Rebuild for readline 8.0
+
 * Tue Feb 12 2019 Miro Hrončok <mhroncok@redhat.com> - 3.7.2-6
 - Reduced default build flags used to build extension modules
   https://fedoraproject.org/wiki/Changes/Python_Extension_Flags
