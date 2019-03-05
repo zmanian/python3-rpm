@@ -258,12 +258,6 @@ Patch155: 00155-avoid-ctypes-thunks.patch
 # Not yet sent upstream
 Patch160: 00160-disable-test_fs_holes-in-rpm-build.patch
 
-# 00163 #
-# Some tests within test_socket fail intermittently when run inside Koji;
-# disable them using unittest._skipInRpmBuild
-# Not yet sent upstream
-Patch163: 00163-disable-parts-of-test_socket-in-rpm-build.patch
-
 # 00170 #
 # In debug builds, try to print repr() when a C-level assert fails in the
 # garbage collector (typically indicating a reference-counting error
@@ -599,7 +593,6 @@ rm -r Modules/expat
 %patch132 -p1
 %patch155 -p1
 %patch160 -p1
-%patch163 -p1
 %patch170 -p1
 %patch178 -p1
 
