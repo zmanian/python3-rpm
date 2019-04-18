@@ -17,7 +17,7 @@ URL: https://www.python.org/
 #global prerel ...
 %global upstream_version %{general_version}%{?prerel}
 Version: %{general_version}%{?prerel:~%{prerel}}
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Python
 
 
@@ -901,6 +901,9 @@ ln -s \
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1111275
 mv %{buildroot}%{_bindir}/2to3-%{pybasever} %{buildroot}%{_bindir}/2to3
 
+# make man python3.Xm work https://bugzilla.redhat.com/show_bug.cgi?id=1612241
+ln -s ./python%{pybasever}.1 %{buildroot}%{_mandir}/man1/python%{pybasever}m.1
+
 %if %{with flatpackage}
 # Remove stuff that would conflict with python3 package
 rm %{buildroot}%{_bindir}/python3
@@ -1491,6 +1494,9 @@ CheckPython optimized
 # ======================================================
 
 %changelog
+* Wed Apr 17 2019 Patrik Kopkan <pkopkan@redhat.com> - 3.7.3-2
+- Makes man python3.7m show python3.7 man pages (#1612241)
+
 * Wed Mar 27 2019 Miro Hrončok <mhroncok@redhat.com> - 3.7.3-1
 - Update to 3.7.3
 
